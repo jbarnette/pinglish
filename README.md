@@ -8,26 +8,27 @@ conforms to the spec below.
 
 * The application __must__ respond to `GET /_ping` as an HTTP request.
 
-* The request __must__ return within 29 seconds. This is one second
-  less than the default timeout for many monitoring services.
-
-* `GET /_ping` should check the health of all services the application
-  depends upon, to answer questions like:
+* The request handler __should__ check the health of all services the
+  application depends upon, to answer questions like:
 
   * "Can I query against my MySQL database?"
   * "Can I create/read keys from Redis?"
   * "How many docs are in my ElasticSearch index?"
 
-* `GET /_ping` __must__ return an `HTTP 200 OK` status code if all
+
+* The response __must__ return within 29 seconds. This is one second
+  less than the default timeout for many monitoring services.
+
+* The response __must__ return an `HTTP 200 OK` status code if all
   health checks pass.
 
-* `GET /_ping` __must__ return an `HTTP 503 SERVICE UNAVAILABLE`
+* The response __must__ return an `HTTP 503 SERVICE UNAVAILABLE`
   status code if any health checks fail.
 
-* `GET /_ping` __must__ return an `HTTP 418 I'M A TEAPOT` status code
+* The response __must__ return an `HTTP 418 I'M A TEAPOT` status code
   if the request asks for any content-type but `application/json`.
 
-* `GET /_ping` __must__ be of Content-Type `application/json;
+* The response __must__ be of Content-Type `application/json;
   charset=UTF-8`.
 
 * The response __must__ be valid JSON. This means even if the
