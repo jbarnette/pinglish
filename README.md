@@ -9,11 +9,9 @@ conforms to the spec below.
 0. The application __must__ respond to `GET /_ping` as an HTTP request.
 
 0. The request handler __should__ check the health of all services the
-  application depends on, to answer questions like:
-
-  * "Can I query against my MySQL database?"
-  * "Can I create/read keys from Redis?"
-  * "How many docs are in my ElasticSearch index?"
+  application depends on, answering questions like, "Can I query
+  agains my MySQL database," "Can I create/read keys in Reds," or "How
+  many docs are in my ElasticSearch index?"
 
 0. The response __must__ return within 29 seconds. This is one second
    less than the default timeout for many monitoring services.
