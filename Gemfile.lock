@@ -1,0 +1,18 @@
+PATH
+  remote: .
+  specs:
+    pinglish (0.0.0)
+      rack
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    minitest (4.5.0)
+    rack (1.5.0)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  minitest (~> 4.5)
+  pinglish!

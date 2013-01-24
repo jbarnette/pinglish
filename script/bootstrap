@@ -1,0 +1,9 @@
+#!/bin/sh
+# Make sure local development dependencies are satisfied.
+
+set -e
+
+cd $(dirname "$0")/..
+rm -rf .bundle/config
+
+bundle install --path .bundle --binstubs .bundle/binstubs --quiet
