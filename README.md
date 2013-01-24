@@ -28,9 +28,8 @@ conforms to the spec below.
 0. The response __must__ be of Content-Type `application/json;
    charset=UTF-8`.
 
-0. The response __must__ be valid JSON. This means even if the
-   application is literally shitting itself in the corner, it must
-   still return valid JSON.
+0. The response __must__ be valid JSON no matter what, even if JSON
+   serialization or other fundamental code fails.
 
 0. The response __must__ contain a `"status"` key set either to `"ok"`
    or `"fail"`.
