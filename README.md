@@ -6,54 +6,53 @@ conforms to the spec below.
 
 ## The Spec
 
-* The application __must__ respond to `GET /_ping` as an HTTP request.
+0. The application __must__ respond to `GET /_ping` as an HTTP request.
 
-* The request handler __should__ check the health of all services the
-  application depends upon, to answer questions like:
+0. The request handler __should__ check the health of all services the
+  application depends on, to answer questions like:
 
   * "Can I query against my MySQL database?"
   * "Can I create/read keys from Redis?"
   * "How many docs are in my ElasticSearch index?"
 
+0. The response __must__ return within 29 seconds. This is one second
+   less than the default timeout for many monitoring services.
 
-* The response __must__ return within 29 seconds. This is one second
-  less than the default timeout for many monitoring services.
+0. The response __must__ return an `HTTP 200 OK` status code if all
+   health checks pass.
 
-* The response __must__ return an `HTTP 200 OK` status code if all
-  health checks pass.
+0. The response __must__ return an `HTTP 503 SERVICE UNAVAILABLE`
+   status code if any health checks fail.
 
-* The response __must__ return an `HTTP 503 SERVICE UNAVAILABLE`
-  status code if any health checks fail.
+0. The response __must__ return an `HTTP 418 I'M A TEAPOT` status code
+   if the request asks for any content-type but `application/json`.
 
-* The response __must__ return an `HTTP 418 I'M A TEAPOT` status code
-  if the request asks for any content-type but `application/json`.
+0. The response __must__ be of Content-Type `application/json;
+   charset=UTF-8`.
 
-* The response __must__ be of Content-Type `application/json;
-  charset=UTF-8`.
+0. The response __must__ be valid JSON. This means even if the
+   application is literally shitting itself in the corner, it must
+   still return valid JSON.
 
-* The response __must__ be valid JSON. This means even if the
-  application is literally shitting itself in the corner, it must
-  still return valid JSON.
+0. The response __must__ contain a `"status"` key set either to `"ok"`
+   or `"fail"`.
 
-* The response __must__ contain a `"status"` key set either to `"ok"`
-  or `"fail"`.
+0. The response __must__ contain a `"now"` key set to the current
+   server's time in seconds since epoch as a string.
 
-* The response __must__ contain a `"now"` key set to the current
-  server's time in seconds since epoch as a string.
+0. If the `"status"` key is set to `"fail"`, the response __may__
+   contain a `"failures"` key set to an Array of string names
+   representing failed checks.
 
-* If the `"status"` key is set to `"fail"`, the response __may__
-  contain a `"failures"` key set to an Array of string names
-  representing failed checks.
+0. If the `"status"` key is set to `"fail"`, the response __may__
+   contain a `"timeouts"` key set to an Array of string names
+   representing checks that exceeded an implementation-specific
+   individual timeout.
 
-* If the `"status"` key is set to `"fail"`, the response __may__
-  contain a `"timeouts"` key set to an Array of string names
-  representing checks that exceeded an implementation-specific
-  individual timeout.
-
-* The response body __may__ contain any other top-level keys to supply
-  additional data about services the application consumes, but all
-  values must be strings, arrays of strings, or hashes where both keys
-  and values are strings.
+0. The response body __may__ contain any other top-level keys to
+   supply additional data about services the application consumes, but
+   all values must be strings, arrays of strings, or hashes where both
+   keys and values are strings.
 
 ### An Example Response
 
