@@ -64,7 +64,7 @@ class Pinglish
     request = Rack::Request.new env
 
     return @app.call env unless request.path == @path
-    return TEAPOT unless request.media_type == "application/json"
+    return TEAPOT unless (env['HTTP_ACCEPT'] || '') =~ "application/json"
 
     timeout MAX_TOTAL_TIME do
       results = {}
