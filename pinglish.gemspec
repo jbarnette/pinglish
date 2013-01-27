@@ -6,7 +6,7 @@ Gem::Specification.new do |gem|
   gem.authors       = ["John Barnette", "Will Farrington"]
   gem.email         = ["jbarnette@github.com", "wfarr@github.com"]
   gem.description   = "A simple Rack middleware for checking app health."
-  gem.summary       = "/_ping your way to freedom."
+  gem.summary       = "ping your way to freedom."
   gem.homepage      = "https://github.com/jbarnette/pinglish"
 
   gem.files         = `git ls-files`.split $/

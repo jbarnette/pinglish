@@ -1,7 +1,7 @@
 require "json"
 require "timeout"
 
-# This Rack middleware provides a "/_ping" endpoint for configurable
+# This Rack middleware provides a "/_status" endpoint for configurable
 # system health checks. It's intended to be consumed by machines.
 
 class Pinglish
@@ -47,12 +47,12 @@ class Pinglish
   class TooLong < RuntimeError; end
 
   # Create a new instance of the middleware wrapping `app`, with an
-  # optional `path` (the default is `"/_ping"`) and behavior `block`.
+  # optional `path` (the default is `"/_status"`) and behavior `block`.
 
   def initialize(app, path = nil, &block)
     @app    = app
     @checks = {}
-    @path   = path || "/_ping"
+    @path   = path || "/_status"
 
     yield self if block_given?
   end

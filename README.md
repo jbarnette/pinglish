@@ -1,17 +1,17 @@
 # Pinglish
 
 A simple Rack middleware for checking application health. Pinglish
-exposes a `/_ping` resource via HTTP `GET`, returning JSON that
+exposes a `/_status` resource via HTTP `GET`, returning JSON that
 conforms to the spec below.
 
 ## The Spec
 
-0. The application __must__ respond to `GET /_ping` as an HTTP request.
+0. The application __must__ respond to `GET /_status` as an HTTP request.
 
 0. The request handler __should__ check the health of all services the
-  application depends on, answering questions like, "Can I query
-  agains my MySQL database," "Can I create/read keys in Reds," or "How
-  many docs are in my ElasticSearch index?"
+   application depends on, answering questions like, "Can I query
+   agains my MySQL database," "Can I create/read keys in Reds," or "How
+   many docs are in my ElasticSearch index?"
 
 0. The response __must__ return within 29 seconds. This is one second
    less than the default timeout for many monitoring services.
