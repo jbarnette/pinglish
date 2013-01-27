@@ -13,6 +13,9 @@ conforms to the spec below.
   agains my MySQL database," "Can I create/read keys in Reds," or "How
   many docs are in my ElasticSearch index?"
 
+0. The request handler __should__ only accept `application/json` as set
+   by the Accept header.
+
 0. The response __must__ return within 29 seconds. This is one second
    less than the default timeout for many monitoring services.
 
