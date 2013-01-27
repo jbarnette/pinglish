@@ -32,16 +32,16 @@ conforms to the spec below.
    serialization or other fundamental code fails.
 
 0. The response __must__ contain a `"status"` key set either to `"ok"`
-   or `"fail"`.
+   or `"failures"`.
 
 0. The response __must__ contain a `"now"` key set to the current
    server's time in seconds since epoch as a string.
 
-0. If the `"status"` key is set to `"fail"`, the response __may__
+0. If the `"status"` key is set to `"failures"`, the response __may__
    contain a `"failures"` key set to an Array of string names
    representing failed checks.
 
-0. If the `"status"` key is set to `"fail"`, the response __may__
+0. If the `"status"` key is set to `"failures"`, the response __may__
    contain a `"timeouts"` key set to an Array of string names
    representing checks that exceeded an implementation-specific
    individual timeout.
@@ -59,7 +59,7 @@ conforms to the spec below.
   // These two keys will always exist.
 
   "now": "1359055102",
-  "status": "fail",
+  "status": "failures",
 
   // This key may only exist when a named check has failed.
 
