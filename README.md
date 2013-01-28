@@ -22,9 +22,6 @@ conforms to the spec below.
 0. The response __must__ return an `HTTP 503 SERVICE UNAVAILABLE`
    status code if any health checks fail.
 
-0. The response __must__ return an `HTTP 418 I'M A TEAPOT` status code
-   if the request asks for any content-type but `application/json`.
-
 0. The response __must__ be of Content-Type `application/json;
    charset=UTF-8`.
 
