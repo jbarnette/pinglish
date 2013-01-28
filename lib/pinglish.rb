@@ -17,11 +17,6 @@ class Pinglish
 
   MAX_TOTAL_TIME = 29
 
-  # This triple is returned if the request media type isn't
-  # "application/json".
-
-  TEAPOT = [418, HEADERS, ['{"teapot":"true"}']]
-
   # Represents a check, which is a behavior block with a name and
   # timeout in seconds.
 
@@ -64,7 +59,6 @@ class Pinglish
     request = Rack::Request.new env
 
     return @app.call env unless request.path == @path
-    return TEAPOT unless request.media_type == "application/json"
 
     timeout MAX_TOTAL_TIME do
       results = {}
