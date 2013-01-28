@@ -13,9 +13,6 @@ conforms to the spec below.
   agains my MySQL database," "Can I create/read keys in Reds," or "How
   many docs are in my ElasticSearch index?"
 
-0. The request handler __should__ only accept `application/json` as set
-   by the Accept header.
-
 0. The response __must__ return within 29 seconds. This is one second
    less than the default timeout for many monitoring services.
 
@@ -24,12 +21,6 @@ conforms to the spec below.
 
 0. The response __must__ return an `HTTP 503 SERVICE UNAVAILABLE`
    status code if any health checks fail.
-
-0. The response __must__ return an `HTTP 418 I'M A TEAPOT` status code
-   if the request asks for any content-type but `application/json`.
-   (In other words, if the request's `Accept` header does not include
-   application/json or a wildcard that matches application/json, then
-   the response must be `HTTP 418`.)
 
 0. The response __must__ be of Content-Type `application/json;
    charset=UTF-8`.
