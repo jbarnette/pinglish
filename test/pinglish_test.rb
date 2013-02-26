@@ -1,7 +1,5 @@
-require "minitest/autorun"
-require "rack"
+require "helper"
 require "rack/test"
-require "pinglish"
 
 class PinglishTest < MiniTest::Unit::TestCase
   include Rack::Test::Methods
