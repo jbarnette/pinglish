@@ -112,7 +112,6 @@ class Pinglish
 
     rescue Exception => ex
 
-      p :fuck => ex
       # Something catastrophic happened. We can't even run the checks
       # and render a JSON response. Fall back on a pre-rendered string
       # and interpolate the current epoch time.
