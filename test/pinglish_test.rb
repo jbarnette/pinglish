@@ -8,7 +8,9 @@ class PinglishTest < MiniTest::Unit::TestCase
 
   def app
     Rack::Builder.new do |builder|
-      builder.use Pinglish
+      builder.use Pinglish do |ping|
+        ping.check(:db) { :up_and_at_em }
+      end
       builder.run FakeApp
     end
   end
@@ -24,6 +26,7 @@ class PinglishTest < MiniTest::Unit::TestCase
 
     assert_in_delta Time.now.to_i, json['now'].to_i, 2
     assert_equal 'ok', json['status']
+    assert_equal 'up_and_at_em', json['db']
   end
 
   def test_customizing_path
