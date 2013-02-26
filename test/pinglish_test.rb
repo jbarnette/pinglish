@@ -44,6 +44,22 @@ class PinglishTest < MiniTest::Unit::TestCase
     assert_equal 'pushin_and_poppin', json['queue']
   end
 
+  def test_with_unnamed_check
+    app = build_app do |ping|
+      ping.check { :yohoho }
+    end
+
+    session = Rack::Test::Session.new(app)
+    session.get '/_ping'
+
+    assert_equal 'application/json; charset=UTF-8',
+      session.last_response.content_type
+
+    json = JSON.load(session.last_response.body)
+    assert json.key?('now')
+    assert_equal 'ok', json['status']
+  end
+
   def test_with_check_that_raises
     app = build_app do |ping|
       ping.check(:db) { :ok }
