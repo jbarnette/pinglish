@@ -11,7 +11,7 @@ class PinglishTest < MiniTest::Unit::TestCase
     end
   end
 
-  def test_default_path_and_status
+  def test_with_defaults
     app = build_app
 
     session = Rack::Test::Session.new(app)
@@ -19,6 +19,10 @@ class PinglishTest < MiniTest::Unit::TestCase
     assert_equal 200, session.last_response.status
     assert_equal 'application/json; charset=UTF-8',
       session.last_response.content_type
+
+    json = JSON.load(session.last_response.body)
+    assert json.key?('now')
+    assert_equal 'ok', json['status']
   end
 
   def test_with_good_check
@@ -34,8 +38,7 @@ class PinglishTest < MiniTest::Unit::TestCase
       session.last_response.content_type
 
     json = JSON.load(session.last_response.body)
-
-    assert_in_delta Time.now.to_i, json['now'].to_i, 2
+    assert json.key?('now')
     assert_equal 'ok', json['status']
     assert_equal 'up_and_at_em', json['db']
     assert_equal 'pushin_and_poppin', json['queue']
@@ -49,9 +52,14 @@ class PinglishTest < MiniTest::Unit::TestCase
 
     session = Rack::Test::Session.new(app)
     session.get '/_ping'
+
     assert_equal 503, session.last_response.status
     assert_equal 'application/json; charset=UTF-8',
       session.last_response.content_type
+
+    json = JSON.load(session.last_response.body)
+    assert json.key?('now')
+    assert_equal 'fail', json['status']
   end
 
   def test_with_check_that_returns_false
@@ -62,9 +70,14 @@ class PinglishTest < MiniTest::Unit::TestCase
 
     session = Rack::Test::Session.new(app)
     session.get '/_ping'
+
     assert_equal 503, session.last_response.status
     assert_equal 'application/json; charset=UTF-8',
       session.last_response.content_type
+
+    json = JSON.load(session.last_response.body)
+    assert json.key?('now')
+    assert_equal 'fail', json['status']
   end
 
   def test_with_custom_path
@@ -75,6 +88,10 @@ class PinglishTest < MiniTest::Unit::TestCase
     assert_equal 200, session.last_response.status
     assert_equal 'application/json; charset=UTF-8',
       session.last_response.content_type
+
+    json = JSON.load(session.last_response.body)
+    assert json.key?('now')
+    assert_equal 'ok', json['status']
   end
 
   def test_check_without_name
