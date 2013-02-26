@@ -17,6 +17,8 @@ class PinglishTest < MiniTest::Unit::TestCase
     session = Rack::Test::Session.new(app)
     session.get '/_ping'
     assert_equal 200, session.last_response.status
+    assert_equal 'application/json; charset=UTF-8',
+      session.last_response.content_type
   end
 
   def test_with_good_check
@@ -27,6 +29,9 @@ class PinglishTest < MiniTest::Unit::TestCase
 
     session = Rack::Test::Session.new(app)
     session.get '/_ping'
+
+    assert_equal 'application/json; charset=UTF-8',
+      session.last_response.content_type
 
     json = JSON.load(session.last_response.body)
 
@@ -45,6 +50,8 @@ class PinglishTest < MiniTest::Unit::TestCase
     session = Rack::Test::Session.new(app)
     session.get '/_ping'
     assert_equal 503, session.last_response.status
+    assert_equal 'application/json; charset=UTF-8',
+      session.last_response.content_type
   end
 
   def test_with_check_that_returns_false
@@ -56,14 +63,18 @@ class PinglishTest < MiniTest::Unit::TestCase
     session = Rack::Test::Session.new(app)
     session.get '/_ping'
     assert_equal 503, session.last_response.status
+    assert_equal 'application/json; charset=UTF-8',
+      session.last_response.content_type
   end
 
-  def test_customizing_path
+  def test_with_custom_path
     app = build_app("/_piiiiing")
 
     session = Rack::Test::Session.new(app)
     session.get '/_piiiiing'
     assert_equal 200, session.last_response.status
+    assert_equal 'application/json; charset=UTF-8',
+      session.last_response.content_type
   end
 
   def test_check_without_name
