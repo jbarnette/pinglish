@@ -13,10 +13,6 @@ class PinglishTest < MiniTest::Unit::TestCase
     end
   end
 
-  def test_sanity
-    assert true
-  end
-
   def test_default_path_and_status
     get '/_ping'
     assert_equal 200, last_response.status
