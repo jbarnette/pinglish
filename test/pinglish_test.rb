@@ -78,6 +78,8 @@ class PinglishTest < MiniTest::Unit::TestCase
     json = JSON.load(session.last_response.body)
     assert json.key?('now')
     assert_equal 'fail', json['status']
+    assert_equal ['fail'], json['failures']
+  end
   end
 
   def test_with_custom_path
