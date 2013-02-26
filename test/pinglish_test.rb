@@ -2,31 +2,37 @@ require "helper"
 require "rack/test"
 
 class PinglishTest < MiniTest::Unit::TestCase
-  include Rack::Test::Methods
-
   FakeApp = lambda { |env| [404, {}, []] }
 
-  def app
-    Rack::Builder.new do |builder|
+  def test_default_path_and_status
+    app = Rack::Builder.new do |builder|
+      builder.use Pinglish
+      builder.run FakeApp
+    end
+
+    session = Rack::Test::Session.new(app)
+    session.get '/_ping'
+    assert_equal 200, session.last_response.status
+  end
+
+  def test_with_good_check
+    app = Rack::Builder.new do |builder|
       builder.use Pinglish do |ping|
         ping.check(:db) { :up_and_at_em }
+        ping.check(:queue) { :pushin_and_poppin }
       end
       builder.run FakeApp
     end
-  end
 
-  def test_default_path_and_status
-    get '/_ping'
-    assert_equal 200, last_response.status
-  end
+    session = Rack::Test::Session.new(app)
+    session.get '/_ping'
 
-  def test_json_response
-    get '/_ping'
-    json = JSON.load(last_response.body)
+    json = JSON.load(session.last_response.body)
 
     assert_in_delta Time.now.to_i, json['now'].to_i, 2
     assert_equal 'ok', json['status']
     assert_equal 'up_and_at_em', json['db']
+    assert_equal 'pushin_and_poppin', json['queue']
   end
 
   def test_with_check_that_raises
@@ -40,7 +46,6 @@ class PinglishTest < MiniTest::Unit::TestCase
 
     session = Rack::Test::Session.new(app)
     session.get '/_ping'
-
     assert_equal 503, session.last_response.status
   end
 
@@ -55,7 +60,6 @@ class PinglishTest < MiniTest::Unit::TestCase
 
     session = Rack::Test::Session.new(app)
     session.get '/_ping'
-
     assert_equal 503, session.last_response.status
   end
 
@@ -64,6 +68,7 @@ class PinglishTest < MiniTest::Unit::TestCase
       builder.use Pinglish, "/_piiiiing"
       builder.run FakeApp
     end
+
     session = Rack::Test::Session.new(app)
     session.get '/_piiiiing'
     assert_equal 200, session.last_response.status
