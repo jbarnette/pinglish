@@ -98,7 +98,6 @@ class PinglishTest < MiniTest::Unit::TestCase
     assert json.key?('now')
     assert_equal 'fail', json['status']
     assert_equal ['long'], json['timeouts']
-    puts json.inspect
   end
 
   def test_with_custom_path
