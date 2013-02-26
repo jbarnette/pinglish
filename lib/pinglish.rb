@@ -1,5 +1,6 @@
 require "json"
 require "timeout"
+require "rack"
 
 # This Rack middleware provides a "/_ping" endpoint for configurable
 # system health checks. It's intended to be consumed by machines.
