@@ -5,5 +5,5 @@ set -e
 
 cd $(dirname "$0")/..
 
-script/bootstrap && ruby -I lib -rubygems \
+script/bootstrap && ruby -I lib -I test -rubygems \
   -e 'require "bundler/setup"; Dir["test/**/*_test.rb"].each { |f| load f }' "$@"
