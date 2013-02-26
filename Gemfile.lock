@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    pinglish (0.0.0)
+    pinglish (0.0.1)
       rack
 
 GEM
