@@ -130,11 +130,11 @@ class Pinglish
   end
 
   # Does `value` represent a check failure? This default
-  # implementation returns `true` for any value that is an Exception.
+  # implementation returns `true` for any value that is an Exception or false.
   # Subclasses can override this method for different behavior.
 
   def failure?(value)
-    value.is_a? Exception
+    value.is_a?(Exception) || value == false
   end
 
   # Raise Pinglish::TooLong after `seconds` has elapsed. This default

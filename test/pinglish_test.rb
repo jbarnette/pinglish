@@ -29,6 +29,21 @@ class PinglishTest < MiniTest::Unit::TestCase
     assert_equal 'up_and_at_em', json['db']
   end
 
+  def test_with_check_that_returns_false
+    app = Rack::Builder.new do |builder|
+      builder.use Pinglish do |ping|
+        ping.check(:db) { :ok }
+        ping.check(:fail) { false }
+      end
+      builder.run FakeApp
+    end
+
+    session = Rack::Test::Session.new(app)
+    session.get '/_ping'
+
+    assert_equal 503, session.last_response.status
+  end
+
   def test_customizing_path
     app = Rack::Builder.new do |builder|
       builder.use Pinglish, "/_piiiiing"
@@ -54,8 +69,18 @@ class PinglishTest < MiniTest::Unit::TestCase
 
   def test_failure_boolean
     pinglish = Pinglish.new(FakeApp)
-    assert pinglish.failure?(Exception.new)
-    assert !pinglish.failure?(:ok)
+
+    assert pinglish.failure?(Exception.new),
+      "Expected failure with exception to be true"
+
+    assert pinglish.failure?(false),
+      "Expected failure with false to be true"
+
+    assert !pinglish.failure?(true),
+      "Expected failure with true value to be false"
+
+    assert !pinglish.failure?(:ok),
+      "Expected failure with non-false and non-exception to be false"
   end
 
   def test_timeout
