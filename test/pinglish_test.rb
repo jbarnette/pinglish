@@ -29,6 +29,21 @@ class PinglishTest < MiniTest::Unit::TestCase
     assert_equal 'up_and_at_em', json['db']
   end
 
+  def test_with_check_that_raises
+    app = Rack::Builder.new do |builder|
+      builder.use Pinglish do |ping|
+        ping.check(:db) { :ok }
+        ping.check(:raise) { raise 'nooooope' }
+      end
+      builder.run FakeApp
+    end
+
+    session = Rack::Test::Session.new(app)
+    session.get '/_ping'
+
+    assert_equal 503, session.last_response.status
+  end
+
   def test_with_check_that_returns_false
     app = Rack::Builder.new do |builder|
       builder.use Pinglish do |ping|
