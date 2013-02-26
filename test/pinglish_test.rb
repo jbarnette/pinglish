@@ -18,6 +18,14 @@ class PinglishTest < MiniTest::Unit::TestCase
     assert_equal 200, last_response.status
   end
 
+  def test_json_response
+    get '/_ping'
+    json = JSON.load(last_response.body)
+
+    assert_in_delta Time.now.to_i, json['now'].to_i, 2
+    assert_equal 'ok', json['status']
+  end
+
   def test_customizing_path
     app = Rack::Builder.new do |builder|
       builder.use Pinglish, "/_piiiiing"
