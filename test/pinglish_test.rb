@@ -4,11 +4,15 @@ require "rack/test"
 class PinglishTest < MiniTest::Unit::TestCase
   FakeApp = lambda { |env| [404, {}, []] }
 
-  def test_default_path_and_status
-    app = Rack::Builder.new do |builder|
-      builder.use Pinglish
+  def build_app(*args, &block)
+    Rack::Builder.new do |builder|
+      builder.use Pinglish, *args, &block
       builder.run FakeApp
     end
+  end
+
+  def test_default_path_and_status
+    app = build_app
 
     session = Rack::Test::Session.new(app)
     session.get '/_ping'
@@ -16,12 +20,9 @@ class PinglishTest < MiniTest::Unit::TestCase
   end
 
   def test_with_good_check
-    app = Rack::Builder.new do |builder|
-      builder.use Pinglish do |ping|
-        ping.check(:db) { :up_and_at_em }
-        ping.check(:queue) { :pushin_and_poppin }
-      end
-      builder.run FakeApp
+    app = build_app do |ping|
+      ping.check(:db) { :up_and_at_em }
+      ping.check(:queue) { :pushin_and_poppin }
     end
 
     session = Rack::Test::Session.new(app)
@@ -36,12 +37,9 @@ class PinglishTest < MiniTest::Unit::TestCase
   end
 
   def test_with_check_that_raises
-    app = Rack::Builder.new do |builder|
-      builder.use Pinglish do |ping|
-        ping.check(:db) { :ok }
-        ping.check(:raise) { raise 'nooooope' }
-      end
-      builder.run FakeApp
+    app = build_app do |ping|
+      ping.check(:db) { :ok }
+      ping.check(:raise) { raise 'nooooope' }
     end
 
     session = Rack::Test::Session.new(app)
@@ -50,12 +48,9 @@ class PinglishTest < MiniTest::Unit::TestCase
   end
 
   def test_with_check_that_returns_false
-    app = Rack::Builder.new do |builder|
-      builder.use Pinglish do |ping|
-        ping.check(:db) { :ok }
-        ping.check(:fail) { false }
-      end
-      builder.run FakeApp
+    app = build_app do |ping|
+      ping.check(:db) { :ok }
+      ping.check(:fail) { false }
     end
 
     session = Rack::Test::Session.new(app)
@@ -64,10 +59,7 @@ class PinglishTest < MiniTest::Unit::TestCase
   end
 
   def test_customizing_path
-    app = Rack::Builder.new do |builder|
-      builder.use Pinglish, "/_piiiiing"
-      builder.run FakeApp
-    end
+    app = build_app("/_piiiiing")
 
     session = Rack::Test::Session.new(app)
     session.get '/_piiiiing'
