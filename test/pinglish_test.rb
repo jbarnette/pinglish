@@ -4,15 +4,62 @@ require "rack/test"
 class PinglishTest < MiniTest::Unit::TestCase
   include Rack::Test::Methods
 
+  FakeApp = lambda { |env| [404, {}, []] }
+
   def app
     Rack::Builder.new do |builder|
       builder.use Pinglish
-      builder.run lambda { |env| [404, {}, []] }
+      builder.run FakeApp
     end
   end
 
   def test_default_path_and_status
     get '/_ping'
     assert_equal 200, last_response.status
+  end
+
+  def test_customizing_path
+    app = Rack::Builder.new do |builder|
+      builder.use Pinglish, "/_piiiiing"
+      builder.run FakeApp
+    end
+    session = Rack::Test::Session.new(app)
+    session.get '/_piiiiing'
+    assert_equal 200, session.last_response.status
+  end
+
+  def test_check_without_name
+    pinglish = Pinglish.new(FakeApp)
+    check = pinglish.check { :ok }
+    assert_instance_of Pinglish::Check, check
+  end
+
+  def test_check_with_name
+    pinglish = Pinglish.new(FakeApp)
+    check = pinglish.check(:db) { :ok }
+    assert_instance_of Pinglish::Check, check
+    assert_equal :db, check.name
+  end
+
+  def test_failure_boolean
+    pinglish = Pinglish.new(FakeApp)
+    assert pinglish.failure?(Exception.new)
+    assert !pinglish.failure?(:ok)
+  end
+
+  def test_timeout
+    pinglish = Pinglish.new(FakeApp)
+    begin
+      pinglish.timeout(0.001) { sleep 0.003 }
+      assert false, "Timeout did not happen, but should have."
+    rescue Pinglish::TooLong => e
+      # all good
+    end
+  end
+
+  def test_timeout_boolean
+    pinglish = Pinglish.new(FakeApp)
+    assert_equal true, pinglish.timeout?(Pinglish::TooLong.new)
+    assert_equal false, pinglish.timeout?(Exception.new)
   end
 end
