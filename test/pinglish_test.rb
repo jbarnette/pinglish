@@ -80,6 +80,25 @@ class PinglishTest < MiniTest::Unit::TestCase
     assert_equal 'fail', json['status']
     assert_equal ['fail'], json['failures']
   end
+
+  def test_with_check_that_times_out
+    app = build_app do |ping|
+      ping.check(:db) { :ok }
+      ping.check(:long, :timeout => 0.001) { sleep 0.003 }
+    end
+
+    session = Rack::Test::Session.new(app)
+    session.get '/_ping'
+
+    assert_equal 503, session.last_response.status
+    assert_equal 'application/json; charset=UTF-8',
+      session.last_response.content_type
+
+    json = JSON.load(session.last_response.body)
+    assert json.key?('now')
+    assert_equal 'fail', json['status']
+    assert_equal ['long'], json['timeouts']
+    puts json.inspect
   end
 
   def test_with_custom_path
