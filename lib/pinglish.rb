@@ -61,63 +61,65 @@ class Pinglish
 
     return @app.call env unless request.path == @path
 
-    timeout MAX_TOTAL_TIME do
-      results = {}
+    begin
+      timeout MAX_TOTAL_TIME do
+        results = {}
 
-      @checks.values.each do |check|
-        begin
-          timeout check.timeout do
-            results[check.name] = check.call
+        @checks.values.each do |check|
+          begin
+            timeout check.timeout do
+              results[check.name] = check.call
+            end
+          rescue StandardError => e
+            results[check.name] = e
           end
-        rescue StandardError => e
-          results[check.name] = e
         end
+
+        failed      = results.values.any? { |v| failure? v }
+        http_status = failed ? 503 : 200
+        text_status = failed ? "fail" : "ok"
+
+        data = {
+          :now    => Time.now.to_i.to_s,
+          :status => text_status
+        }
+
+        results.each do |name, value|
+
+          # The unnnamed/default check doesn't contribute data.
+          next if name.nil?
+
+          if failure? value
+
+            # If a check fails its name is added to a `failures` array.
+            # If the check failed because it timed out, its name is
+            # added to a `timeouts` array instead.
+
+            key = timeout?(value) ? :timeouts : :failures
+            (data[key] ||= []) << name
+
+          elsif value
+
+            # If the check passed and returned a value, the stringified
+            # version of the value is returned under the `name` key.
+
+            data[name] = value.to_s
+          end
+        end
+
+        [http_status, HEADERS, [JSON.generate(data)]]
       end
 
-      failed      = results.values.any? { |v| failure? v }
-      http_status = failed ? 503 : 200
-      text_status = failed ? "fail" : "ok"
+    rescue Exception => ex
 
-      data = {
-        :now    => Time.now.to_i.to_s,
-        :status => text_status
-      }
+      p :fuck => ex
+      # Something catastrophic happened. We can't even run the checks
+      # and render a JSON response. Fall back on a pre-rendered string
+      # and interpolate the current epoch time.
 
-      results.each do |name, value|
-
-        # The unnnamed/default check doesn't contribute data.
-        next if name.nil?
-
-        if failure? value
-
-          # If a check fails its name is added to a `failures` array.
-          # If the check failed because it timed out, its name is
-          # added to a `timeouts` array instead.
-
-          key = timeout?(value) ? :timeouts : :failures
-          (data[key] ||= []) << name
-
-        elsif value
-
-          # If the check passed and returned a value, the stringified
-          # version of the value is returned under the `name` key.
-
-          data[name] = value.to_s
-        end
-      end
-
-      [http_status, HEADERS, [JSON.generate(data)]]
+      now = Time.now.to_i.to_s
+      [500, HEADERS, ['{"status":"fail","now":"' + now + '"}']]
     end
-
-  rescue Exception => ex
-
-    p :fuck => ex
-    # Something catastrophic happened. We can't even run the checks
-    # and render a JSON response. Fall back on a pre-rendered string
-    # and interpolate the current epoch time.
-
-    now = Time.now.to_i.to_s
-    [500, HEADERS, ['{"status":"fail","now":"' + now + '"}']]
   end
 
   # Add a new check with optional `name`. A `:timeout` option can be

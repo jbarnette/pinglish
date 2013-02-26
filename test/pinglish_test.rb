@@ -20,6 +20,22 @@ class PinglishTest < MiniTest::Unit::TestCase
     assert_equal 'fake', session.last_response.body
   end
 
+  def test_with_non_matching_request_path_and_exception
+    app = Rack::Builder.new do |builder|
+      builder.use Pinglish
+      builder.run lambda { |env| raise 'boom' }
+    end
+
+    session = Rack::Test::Session.new(app)
+
+    begin
+      session.get '/something'
+      assert false, "Expected app to raise error, but did not."
+    rescue RuntimeError => ex
+      # all good
+    end
+  end
+
   def test_with_defaults
     app = build_app
 
