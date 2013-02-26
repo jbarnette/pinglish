@@ -2,13 +2,22 @@ require "helper"
 require "rack/test"
 
 class PinglishTest < MiniTest::Unit::TestCase
-  FakeApp = lambda { |env| [404, {}, []] }
+  FakeApp = lambda { |env| [200, {}, ['fake']] }
 
   def build_app(*args, &block)
     Rack::Builder.new do |builder|
       builder.use Pinglish, *args, &block
       builder.run FakeApp
     end
+  end
+
+  def test_with_non_matching_request_path
+    app = build_app
+
+    session = Rack::Test::Session.new(app)
+    session.get '/something'
+    assert_equal 200, session.last_response.status
+    assert_equal 'fake', session.last_response.body
   end
 
   def test_with_defaults
