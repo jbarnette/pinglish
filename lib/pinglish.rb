@@ -1,5 +1,6 @@
 require "json"
 require "timeout"
+require "rack/request"
 
 # This Rack middleware provides a "/_ping" endpoint for configurable
 # system health checks. It's intended to be consumed by machines.
@@ -129,11 +130,11 @@ class Pinglish
   end
 
   # Does `value` represent a check failure? This default
-  # implementation returns `true` for any value that is an Exception.
+  # implementation returns `true` for any value that is an Exception or false.
   # Subclasses can override this method for different behavior.
 
   def failure?(value)
-    value.is_a? Exception
+    value.is_a?(Exception) || value == false
   end
 
   # Raise Pinglish::TooLong after `seconds` has elapsed. This default
