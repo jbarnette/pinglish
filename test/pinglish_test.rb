@@ -17,7 +17,7 @@ class PinglishTest < MiniTest::Unit::TestCase
     assert true
   end
 
-  def test_default_path
+  def test_default_path_and_status
     get '/_ping'
     assert_equal 200, last_response.status
   end
