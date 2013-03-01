@@ -6,4 +6,4 @@ set -e
 cd $(dirname "$0")/..
 rm -rf .bundle/config
 
-bundle install --path .bundle --binstubs .bundle/binstubs --quiet
+bundle install --path .bundle --binstubs .bundle/binstubs --quiet "$@"
