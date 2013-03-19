@@ -100,7 +100,7 @@ class PinglishTest < MiniTest::Unit::TestCase
 
     json = JSON.load(session.last_response.body)
     assert json.key?('now')
-    assert_equal 'fail', json['status']
+    assert_equal 'failures', json['status']
   end
 
   def test_with_check_that_returns_false
@@ -118,7 +118,7 @@ class PinglishTest < MiniTest::Unit::TestCase
 
     json = JSON.load(session.last_response.body)
     assert json.key?('now')
-    assert_equal 'fail', json['status']
+    assert_equal 'failures', json['status']
     assert_equal ['fail'], json['failures']
   end
 
@@ -137,7 +137,7 @@ class PinglishTest < MiniTest::Unit::TestCase
 
     json = JSON.load(session.last_response.body)
     assert json.key?('now')
-    assert_equal 'fail', json['status']
+    assert_equal 'failures', json['status']
     assert_equal ['long'], json['timeouts']
   end
 

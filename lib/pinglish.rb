@@ -77,7 +77,7 @@ class Pinglish
 
         failed      = results.values.any? { |v| failure? v }
         http_status = failed ? 503 : 200
-        text_status = failed ? "fail" : "ok"
+        text_status = failed ? "failures" : "ok"
 
         data = {
           :now    => Time.now.to_i.to_s,
@@ -117,7 +117,7 @@ class Pinglish
       # and interpolate the current epoch time.
 
       now = Time.now.to_i.to_s
-      [500, HEADERS, ['{"status":"fail","now":"' + now + '"}']]
+      [500, HEADERS, ['{"status":"failures","now":"' + now + '"}']]
     end
   end
 
