@@ -142,7 +142,7 @@ class PinglishTest < MiniTest::Unit::TestCase
   end
 
   def test_with_custom_path
-    app = build_app("/_piiiiing")
+    app = build_app(:path => "/_piiiiing")
 
     session = Rack::Test::Session.new(app)
     session.get '/_piiiiing'

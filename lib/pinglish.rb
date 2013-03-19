@@ -13,11 +13,6 @@ class Pinglish
     "Content-Type" => "application/json; charset=UTF-8"
   }
 
-  # The maximum amount of time for all checks. 29 seconds, to come in
-  # just under the 30 second limit of many monitoring services.
-
-  MAX_TOTAL_TIME = 29
-
   # Represents a check, which is a behavior block with a name and
   # timeout in seconds.
 
@@ -45,10 +40,13 @@ class Pinglish
   # Create a new instance of the middleware wrapping `app`, with an
   # optional `path` (the default is `"/_ping"`) and behavior `block`.
 
-  def initialize(app, path = nil, &block)
+  def initialize(app, options = nil, &block)
+    options ||= {}
+
     @app    = app
     @checks = {}
-    @path   = path || "/_ping"
+    @max    = options[:max] || 29 # seconds
+    @path   = options[:path] || "/_ping"
 
     yield self if block_given?
   end
@@ -62,7 +60,7 @@ class Pinglish
     return @app.call env unless request.path == @path
 
     begin
-      timeout MAX_TOTAL_TIME do
+      timeout @timeout do
         results = {}
 
         @checks.values.each do |check|
