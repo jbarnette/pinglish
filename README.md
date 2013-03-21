@@ -75,8 +75,6 @@ conforms to the spec below.
 
 ## The Middleware
 
-FIX: exegesis
-
 ```ruby
 require "pinglish"
 
@@ -108,14 +106,10 @@ use Pinglish do |ping|
     App.dawdle
   end
 
-  # Signal check failure by raising an exception.
+  # Signal check failure by raising an exception. Any exception will do.
 
   ping.check :fails do
-    false or raise "Everything's ruined."
+    raise "Everything's ruined."
   end
 end
 ```
-
-## Contributing
-
-FIX

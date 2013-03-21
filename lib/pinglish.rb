@@ -1,6 +1,7 @@
 require "json"
-require "timeout"
+require "pinglish/check"
 require "rack/request"
+require "timeout"
 
 # This Rack middleware provides a "/_ping" endpoint for configurable
 # system health checks. It's intended to be consumed by machines.
@@ -13,32 +14,13 @@ class Pinglish
     "Content-Type" => "application/json; charset=UTF-8"
   }
 
-  # Represents a check, which is a behavior block with a name and
-  # timeout in seconds.
-
-  class Check
-    attr_reader :name
-    attr_reader :timeout
-
-    def initialize(name, options = nil, &block)
-      @name    = name
-      @timeout = options && options[:timeout] || 1
-      @block   = block
-    end
-
-    # Call this check's behavior, returning the result of the block.
-
-    def call(*args, &block)
-      @block.call *args, &block
-    end
-  end
-
   # Raised when a check exceeds its timeout.
 
   class TooLong < RuntimeError; end
 
   # Create a new instance of the middleware wrapping `app`, with an
-  # optional `path` (the default is `"/_ping"`) and behavior `block`.
+  # optional `:path` (default: `"/_ping"`), `:max` timeout in seconds
+  # (default: `29`), and behavior `block`.
 
   def initialize(app, options = nil, &block)
     options ||= {}
@@ -59,11 +41,18 @@ class Pinglish
 
     return @app.call env unless request.path == @path
 
+    groups = [].map(&:to_s) # FIX
+
     begin
       timeout @timeout do
-        results = {}
+        results  = {}
+        filtered = @checks.values
 
-        @checks.values.each do |check|
+        unless groups.empty?
+          filtered = filtered.select { |c| groups.include? c.group.to_s }
+        end
+
+        filtered.each do |check|
           begin
             timeout check.timeout do
               results[check.name] = check.call
