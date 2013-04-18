@@ -10,7 +10,7 @@ conforms to the spec below.
 
 0. The request handler __should__ check the health of all services the
   application depends on, answering questions like, "Can I query
-  agains my MySQL database," "Can I create/read keys in Reds," or "How
+  agains my MySQL database," "Can I create/read keys in Redis," or "How
   many docs are in my ElasticSearch index?"
 
 0. The response __must__ return within 29 seconds. This is one second
