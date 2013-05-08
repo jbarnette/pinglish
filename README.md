@@ -107,9 +107,13 @@ use Pinglish do |ping|
   end
 
   # Signal check failure by raising an exception. Any exception will do.
-
   ping.check :fails do
     raise "Everything's ruined."
+  end
+
+  # Additionally, any check that returns false is counted as a failure.
+  ping.check :false_fails do
+    false
   end
 end
 ```
