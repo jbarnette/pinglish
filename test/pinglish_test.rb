@@ -138,6 +138,20 @@ class PinglishTest < MiniTest::Unit::TestCase
     assert_equal ["long"], json["timeouts"]
   end
 
+  def test_with_script_name
+    app = build_app
+
+    session = Rack::Test::Session.new(app)
+    session.get "/_ping", {}, "SCRIPT_NAME" => "/myapp"
+    assert_equal 200, session.last_response.status
+    assert_equal "application/json; charset=UTF-8",
+      session.last_response.content_type
+
+    json = JSON.load(session.last_response.body)
+    assert json.key?("now")
+    assert_equal "ok", json["status"]
+  end
+
   def test_with_custom_path
     app = build_app(:path => "/_piiiiing")
 
