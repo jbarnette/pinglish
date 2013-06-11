@@ -39,7 +39,7 @@ class Pinglish
   def call(env)
     request = Rack::Request.new env
 
-    return @app.call env unless request.path == @path
+    return @app.call env unless request.path_info == @path
 
     groups = [].map(&:to_s) # FIX
 
