@@ -44,9 +44,8 @@ class Pinglish
     begin
       timeout @timeout do
         results  = {}
-        filtered = @checks.values
 
-        filtered.each do |check|
+        @checks.values.each do |check|
           begin
             timeout check.timeout do
               results[check.name] = check.call
