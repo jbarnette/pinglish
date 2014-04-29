@@ -41,18 +41,11 @@ class Pinglish
 
     return @app.call env unless request.path_info == @path
 
-    groups = [].map(&:to_s) # FIX
-
     begin
       timeout @timeout do
         results  = {}
-        filtered = @checks.values
 
-        unless groups.empty?
-          filtered = filtered.select { |c| groups.include? c.group.to_s }
-        end
-
-        filtered.each do |check|
+        @checks.values.each do |check|
           begin
             timeout check.timeout do
               results[check.name] = check.call
