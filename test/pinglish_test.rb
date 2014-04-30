@@ -138,6 +138,23 @@ class PinglishTest < MiniTest::Unit::TestCase
     assert_equal ["long"], json["timeouts"]
   end
 
+  def test_with_checks_taking_more_than_max
+    app = build_app(:max => 0.001) do |ping|
+      ping.check(:long) { sleep 0.003 }
+    end
+
+    session = Rack::Test::Session.new(app)
+    session.get "/_ping"
+
+    assert_equal 503, session.last_response.status
+    assert_equal "application/json; charset=UTF-8",
+      session.last_response.content_type
+
+    json = JSON.load(session.last_response.body)
+    assert json.key?("now")
+    assert_equal "failures", json["status"]
+  end
+
   def test_with_script_name
     app = build_app
 

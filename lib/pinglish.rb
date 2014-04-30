@@ -42,7 +42,7 @@ class Pinglish
     return @app.call env unless request.path_info == @path
 
     begin
-      timeout @timeout do
+      timeout @max do
         results  = {}
 
         @checks.values.each do |check|
