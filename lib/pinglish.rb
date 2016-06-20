@@ -48,7 +48,7 @@ class Pinglish
         @checks.values.each do |check|
           begin
             timeout check.timeout do
-              results[check.name] = check.call
+              results[check.name] = check.call env
             end
           rescue StandardError => e
             results[check.name] = e

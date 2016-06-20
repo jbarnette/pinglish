@@ -155,6 +155,18 @@ class PinglishTest < MiniTest::Unit::TestCase
     assert_equal "failures", json["status"]
   end
 
+  def test_with_check_with_env
+    app = build_app do |ping|
+      ping.check(:with_env) { |env| env.fetch('PATH_INFO') }
+    end
+
+    session = Rack::Test::Session.new(app)
+    session.get "/_ping"
+
+    json = JSON.load(session.last_response.body)
+    assert_equal "/_ping", json["with_env"]
+  end
+
   def test_with_script_name
     app = build_app
 
