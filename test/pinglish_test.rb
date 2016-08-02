@@ -100,6 +100,21 @@ class PinglishTest < MiniTest::Unit::TestCase
     assert_equal "failures", json["status"]
   end
 
+  def test_with_check_that_raises_and_calls_on_rescue
+    app = build_app do |ping|
+      ping.on_rescue { |error| "Noticed this: #{error}" }
+      ping.check(:raise) { raise "nooooope" }
+    end
+
+    session = Rack::Test::Session.new(app)
+    session.get "/_ping"
+
+    assert_equal 503, session.last_response.status
+
+    json = JSON.load(session.last_response.body)
+    assert_equal "failures", json["status"]
+  end
+
   def test_with_check_that_returns_false
     app = build_app do |ping|
       ping.check(:db) { :ok }
@@ -219,5 +234,17 @@ class PinglishTest < MiniTest::Unit::TestCase
 
     assert pinglish.timeout?(Pinglish::TooLong.new)
     refute pinglish.timeout?(Exception.new)
+  end
+
+  def test_on_rescue
+    pinglish = Pinglish.new(FakeApp)
+    check = pinglish.check(:raise) { raise 'An error' }
+
+    rescued = nil
+    pinglish.on_rescue { |error| rescued = error }
+
+    assert_equal nil, rescued # control check
+    pinglish.call("PATH_INFO" => "/_ping")
+    assert_equal 'An error', rescued.message
   end
 end
