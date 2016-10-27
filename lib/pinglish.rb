@@ -87,7 +87,7 @@ class Pinglish
           end
         end
 
-        [http_status, HEADERS, [JSON.generate(data)]]
+        [http_status, HEADERS.dup, [JSON.generate(data)]]
       end
 
     rescue Exception => ex
@@ -97,7 +97,7 @@ class Pinglish
       # and interpolate the current epoch time.
 
       now = Time.now.to_i.to_s
-      [500, HEADERS, ['{"status":"failures","now":"' + now + '"}']]
+      [500, HEADERS.dup, ['{"status":"failures","now":"' + now + '"}']]
     end
   end
 
