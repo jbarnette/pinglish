@@ -29,6 +29,7 @@ class Pinglish
     @checks = {}
     @max    = options[:max] || 29 # seconds
     @path   = options[:path] || "/_ping"
+    @on_rescue_block = options[:on_rescue] || ->(_) { }
 
     yield self if block_given?
   end
@@ -51,6 +52,7 @@ class Pinglish
               results[check.name] = check.call
             end
           rescue StandardError => e
+            on_rescue_block.call(e)
             results[check.name] = e
           end
         end
@@ -134,4 +136,12 @@ class Pinglish
   def timeout?(value)
     value.is_a? Pinglish::TooLong
   end
+
+  def on_rescue(&block)
+    @on_rescue_block = block
+  end
+
+  private
+
+  attr_reader :on_rescue_block
 end
